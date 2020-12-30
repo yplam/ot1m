@@ -1,0 +1,7 @@
+# NRF52840OT1M NRF52840 board configuration
+
+config BOARD_ENABLE_DCDC
+	bool "Enable DCDC mode"
+	select SOC_DCDC_NRF52X
+	default n
+	depends on BOARD_NRF52840OT1M_NRF52840

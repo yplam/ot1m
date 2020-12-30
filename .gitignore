@@ -1,0 +1,5 @@
+.idea
+build
+app.zip
+cmake-build-debug/
+overlay-lwm2m.conf
