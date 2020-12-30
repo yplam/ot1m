@@ -13,3 +13,20 @@ OpenThread 是由 Google 发布的 Thread 的开源实现，基于 IEEE 802.15.4
 
 模块软件基于 Zephyr RTOS，实现了一个 AT 指令服务器，可以通过 AT 指令进行配置，联网，以及发送数据；
 模块实现了 SNTP 客户端、COAP 客户端以及LWM2M客户端功能（开发中），分别用来同步时间，上传数据以及管理设备。
+
+## 入门
+
+参考 Zephyr 官方文档，安装 SDK：https://docs.zephyrproject.org/latest/getting_started/index.html
+
+创建项目主目录，如 ot_app，然后 clone 此项目源码到 ot1m 目录，然后使用 west 命令编译，如：
+
+```
+mkdir ot_app
+cd ot_app
+git clone https://github.com/yplam/ot1m.git
+west init -l ot1m
+west update
+cd ot1m
+west build -b nrf52840ot1m_nrf52840  -- -DCONF_FILE="prj.conf overlay-at-modem.conf overlay-coap.conf"
+
+```
