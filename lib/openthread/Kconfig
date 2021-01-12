@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2018 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
+#
+
+menu "App OpenThread Configure"
+
+config APP_OPENTHREAD
+	bool "App OpenThread Configure"
+
+endmenu

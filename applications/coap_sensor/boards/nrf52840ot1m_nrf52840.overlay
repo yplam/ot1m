@@ -1,0 +1,40 @@
+/ {
+    leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+			label = "Green LED 0";
+		};
+	};
+	buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+            gpios = <&gpio0 8 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+            label = "en pin";
+        };
+        button1: button_1 {
+            gpios = <&gpio0 4 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            label = "Push button";
+        };
+    };
+    aliases {
+        btnen = &button0;
+        btnpush = &button1;
+    };
+};
+&uart0 {
+    status = "disabled";
+};
+
+&i2c0 { /* SDA P0.26, SCL P0.12*/
+    compatible = "nordic,nrf-twi";
+	status = "okay";
+	sda-pin = <26>;
+	scl-pin = <12>;
+	sht3xd@44 {
+		compatible = "sensirion,sht3xd";
+		reg = <0x44>;
+		label = "SHT3XD";
+		alert-gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
+	};
+};

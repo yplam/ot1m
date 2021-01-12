@@ -3,3 +3,7 @@ build
 app.zip
 cmake-build-debug/
 overlay-lwm2m.conf
+
+applications/*/.idea
+applications/*/build
+applications/*/cmake-build-debug
