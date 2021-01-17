@@ -44,7 +44,7 @@ static int app_openthread_network_start(const struct device *dev)
     uint16_t setting_len = sizeof(ot_settings);
     int ret = app_settings_get(APP_SETTINGS_OT, (uint8_t *)&ot_settings, &setting_len);
     if(ret != 0){
-        ot_settings.sed_enable = 0U;
+        ot_settings.sed_enable = 1U;
         ot_settings.poll_period_ms = CONFIG_APP_OPENTHREAD_SLEEPY_POLL_PERIOD;
         ot_settings.timeout_s = CONFIG_APP_OPENTHREAD_CHILD_TIMEOUT;
     }

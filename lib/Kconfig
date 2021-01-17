@@ -6,6 +6,7 @@
 
 menu "Libraries"
 
+rsource "coap/Kconfig"
 rsource "openthread/Kconfig"
 rsource "settings/Kconfig"
 

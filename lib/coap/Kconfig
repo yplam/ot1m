@@ -1,0 +1,18 @@
+#
+# Copyright (c) 2018 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
+#
+
+menu "App COAP Configure"
+
+config APP_COAP
+	bool "App COAP client"
+	select APP_OPENTHREAD
+	select COAP
+
+config APP_MAX_COAP_MSG_LEN
+	int "AT COAP MAX SIZE"
+	default 256
+
+endmenu

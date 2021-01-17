@@ -2,6 +2,27 @@ menu "OT1M"
 
 config BOARD_NRF52840OT1M_NRF52840
 	bool
+
+config APP_MANUFACTURER
+    string "app manufacturer"
+    default "OT1M"
+
+config APP_MODEL_NUMBER
+    string "app model number"
+    default "OT1M"
+
+config APP_FIRMWARE_VER
+    string "app firmware version"
+    default "1.0.0"
+
+config APP_HW_VER
+    string "app hardware version"
+    default "1.0"
+
+config APP_OPENTHREAD_JOINER_PSKD
+    string "app openthread joiner pskd"
+    default "J01NME"
+
 endmenu
 
 rsource "lib/Kconfig"

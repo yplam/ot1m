@@ -8,5 +8,25 @@ menu "App OpenThread Configure"
 
 config APP_OPENTHREAD
 	bool "App OpenThread Configure"
+	select APP_SETTINGS
 
+if	APP_OPENTHREAD
+
+config APP_OPENTHREAD_AUTO_START
+    bool "Auto Start Saved Network"
+    default y
+
+config APP_OPENTHREAD_CHILD_TIMEOUT
+    int "Openthread SED child timeout"
+    default 240
+
+config APP_OPENTHREAD_ACTIVE_POLL_PERIOD
+    int "Openthread SED active poll period"
+    default 200
+
+config APP_OPENTHREAD_SLEEPY_POLL_PERIOD
+    int "Openthread SED sleepy poll period"
+    default 30000
+
+endif
 endmenu
