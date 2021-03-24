@@ -35,6 +35,5 @@
 		compatible = "sensirion,sht3xd";
 		reg = <0x44>;
 		label = "SHT3XD";
-		alert-gpios = <&gpio0 8 GPIO_ACTIVE_HIGH>;
 	};
 };

@@ -33,4 +33,4 @@ static int app_led_startup(const struct device *dev){
     return 0;
 }
 
-SYS_INIT(app_led_startup, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+//SYS_INIT(app_led_startup, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);

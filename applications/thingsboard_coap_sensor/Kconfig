@@ -1,0 +1,9 @@
+config APP_THINGS_BOARD_SERVER
+    string "ThingsBoard server ipv6"
+    default "ff03::1"
+
+config APP_THINGS_BOARD_TOKEN
+    string "ThingsBoard server access token"
+    default "abcd"
+
+source "Kconfig.zephyr"

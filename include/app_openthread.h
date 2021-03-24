@@ -14,6 +14,7 @@ typedef struct {
     uint32_t timeout_s;
 } app_ot_settings;
 
+void app_ot_start_join(void);
 void app_ot_set_power_state(enum app_ot_power_state state);
-
+bool app_ot_is_connected(void);
 #endif //APP_OPENTHREAD_H

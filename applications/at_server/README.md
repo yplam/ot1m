@@ -11,12 +11,8 @@ NRF52840 是一个支持多协议的低功耗无线 SOC，支持 BLE，Zigbee，
 OpenThread 是由 Google 发布的 Thread 的开源实现，基于 IEEE 802.15.4， 
 主要特点是实现了一个低功耗的IPv6协议，可以很容易的将原来基于IP协议的应用移植过来。
 
-模块软件基于 Zephyr RTOS，实现了以下几个子应用：
-
-* at_server，AT Server 用于配置网络，请求数据，实现了 SNTP 客户端、COAP 客户端以及LWM2M客户端功能
-* thingsboard_coap_sersor，配合 OT1M_EVM 底板，实现温湿度传感器数据通过COAP协议发送到ThingsBoard服务端
-* mcuboot，Bootloader 相关配置
-* cpu_idle，用于测试模块静止功耗
+模块软件基于 Zephyr RTOS，实现了一个 AT 指令服务器，可以通过 AT 指令进行配置，联网，以及发送数据；
+模块实现了 SNTP 客户端、COAP 客户端以及LWM2M客户端功能（开发中），分别用来同步时间，上传数据以及管理设备。
 
 ## 入门
 
@@ -30,12 +26,7 @@ cd ot_app
 git clone https://github.com/yplam/ot1m.git
 west init -l ot1m
 west update
-cd ot1m/applications/at_server
+cd ot1m
 west build -b nrf52840ot1m_nrf52840  -- -DCONF_FILE="prj.conf overlay-at-modem.conf overlay-coap.conf"
 
 ```
-
-## 功耗
-
-* cpu_idle 状态下平均电流约 3ua
-* thingsboard_coap_sersor SED 模式，100s SLEEPY_POLL_PERIOD，并且没60秒读取温湿度上传，平均电流约 30ua-50ua，

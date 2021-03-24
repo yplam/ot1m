@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.13.1)
 
-set(BOARD nrf52840ot1m_nrf52840)
+set(BOARD e0102_nrf52840)
 
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 
@@ -24,9 +24,8 @@ foreach (CONFIG ${LIST_OF_CONFIGS})
     set(${CONFIG_ITEM_NAME} ${CONFIG_ITEM_VALUE})
 endforeach()
 
-include_directories(${ZEPHYR_BASE}/subsys/net/ip ../modules/lib/openthread/include)
 
-project(coap_sensor)
-target_sources(app PRIVATE src/led.c src/sensor_en.c src/main.c)
+project(e0102)
+target_sources(app PRIVATE src/main.c)
 
 target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/src)
