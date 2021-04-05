@@ -16,12 +16,15 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #include <app_lwm2m.h>
 #include <net/lwm2m.h>
 //#include <sht30d.h>
-#include <nrfx_gpiote.h>
-#include <button.h>
+//#include <nrfx_gpiote.h>
+//#include <button.h>
 
 #include <net/openthread.h>
 #include <openthread/link.h>
 #include <openthread/thread.h>
+#include <drivers/flash.h>
+#include <drivers/display.h>
+#include "epdpaint.h"
 
 #define LIGHT_NAME		"Test light"
 
@@ -52,56 +55,169 @@ void on_btn_single_click(void) {
 void on_btn_long_press(void) {
     app_ot_start_join();
 }
+//
+//static void led_init(void) {
+//    int ret;
+//    nrfx_gpiote_out_config_t const out_config = {
+//            .action = NRF_GPIOTE_POLARITY_TOGGLE,
+//            .init_state = 1,
+//            .task_pin = true,
+//    };
+//
+//    /* Initialize output pin. SET task will turn the LED on,
+//     * CLR will turn it off and OUT will toggle it.
+//     */
+//    ret = nrfx_gpiote_out_init(LED0+32, &out_config);
+//    if (ret != NRFX_SUCCESS) {
+//        LOG_ERR("nrfx_gpiote_out_init error: %08x", ret);
+//        return;
+//    }
+////    nrfx_gpiote_out_task_enable(LED0);
+//}
+//
+///* TODO: Move to a pre write hook that can handle ret codes once available */
+//static int led_on_off_cb(uint16_t obj_inst_id, uint16_t res_id, uint16_t res_inst_id,
+//                         uint8_t *data, uint16_t data_len,
+//                         bool last_block, size_t total_size)
+//{
+//    int ret = 0;
+//    uint32_t led_val;
+//
+//    led_val = *(uint8_t *) data;
+//    if (led_val != led_state) {
+//        nrfx_gpiote_out_toggle(LED0+32);
+//        led_state = led_val;
+//        /* TODO: Move to be set by an internal post write function */
+//        lwm2m_engine_set_s32("3311/0/5852", 0);
+//    }
+//
+//    return ret;
+//}
 
-static void led_init(void) {
-    int ret;
-    nrfx_gpiote_out_config_t const out_config = {
-            .action = NRF_GPIOTE_POLARITY_TOGGLE,
-            .init_state = 1,
-            .task_pin = true,
-    };
+#define FLASH_DEVICE DT_LABEL(DT_INST(0, nordic_qspi_nor))
+#define FLASH_NAME "JEDEC QSPI-NOR"
+#define FLASH_TEST_REGION_OFFSET 0xff000
+#define FLASH_SECTOR_SIZE        4096
+Paint paint;
+#define COLORED      1
+#define UNCOLORED    0
 
-    /* Initialize output pin. SET task will turn the LED on,
-     * CLR will turn it off and OUT will toggle it.
-     */
-    ret = nrfx_gpiote_out_init(LED0+32, &out_config);
-    if (ret != NRFX_SUCCESS) {
-        LOG_ERR("nrfx_gpiote_out_init error: %08x", ret);
-        return;
-    }
-//    nrfx_gpiote_out_task_enable(LED0);
-}
-
-/* TODO: Move to a pre write hook that can handle ret codes once available */
-static int led_on_off_cb(uint16_t obj_inst_id, uint16_t res_id, uint16_t res_inst_id,
-                         uint8_t *data, uint16_t data_len,
-                         bool last_block, size_t total_size)
-{
-    int ret = 0;
-    uint32_t led_val;
-
-    led_val = *(uint8_t *) data;
-    if (led_val != led_state) {
-        nrfx_gpiote_out_toggle(LED0+32);
-        led_state = led_val;
-        /* TODO: Move to be set by an internal post write function */
-        lwm2m_engine_set_s32("3311/0/5852", 0);
-    }
-
-    return ret;
-}
 
 void main(void) {
     LOG_INF("OT1M Starting...");
     int ret;
+//    const struct device *flash_dev;
+//    flash_dev = device_get_binding(FLASH_DEVICE);
+//
+//    if (!flash_dev) {
+//        LOG_WRN("SPI flash driver %s was not found!\n",
+//               FLASH_DEVICE);
+//        return;
+//    }
+//    LOG_INF("\nTest 1: Flash erase\n");
+//    flash_write_protection_set(flash_dev, false);
+//
+//    ret = flash_erase(flash_dev, FLASH_TEST_REGION_OFFSET,
+//                     FLASH_SECTOR_SIZE);
+//    if (ret != 0) {
+//        LOG_WRN("Flash erase failed! %d\n", ret);
+//    } else {
+//        LOG_INF("Flash erase succeeded!\n");
+//    }
+
+    const struct device *display_dev = device_get_binding("WaveShare_4IN2");
+
+    if (display_dev == NULL) {
+        LOG_ERR("device not found.  Aborting test.");
+        return;
+    }
+    ret = display_blanking_on(display_dev);
+    if ( ret != 0) {
+        LOG_ERR("blanking error %d.", ret);
+        return;
+    }
+    Paint_Init(&paint, display_get_framebuffer(display_dev),400,300);
+    Paint_Clear(&paint, UNCOLORED);
+    Paint_DrawStringAt(&paint, 5, 5, "HELLO", &Font8, COLORED);
+    Paint_DrawStringAt(&paint, 5, 15, "World", &Font8, COLORED);
+    ret = display_blanking_off(display_dev);
+    if ( ret != 0) {
+        LOG_ERR("blanking error %d.", ret);
+        return;
+    }
+
+    const struct device *dev = device_get_binding("LIS3DH");
+    int rc;
+
+    if (dev == NULL) {
+        LOG_WRN("Could not get LIS3DH device\n");
+        return;
+    }
+
+    while (true) {
+        struct sensor_value x, y, z;
+
+        rc = sensor_sample_fetch(dev);
+        if (rc == 0) {
+            rc = sensor_channel_get(dev, SENSOR_CHAN_ACCEL_X,
+                                    &x);
+        }
+        if (rc == 0) {
+            rc = sensor_channel_get(dev, SENSOR_CHAN_ACCEL_Y,
+                                    &y);
+        }
+        if (rc == 0) {
+            rc = sensor_channel_get(dev, SENSOR_CHAN_ACCEL_Z,
+                                    &z);
+        }
+        if (rc != 0) {
+            LOG_INF("SHT3XD: failed: %d\n", rc);
+            break;
+        }
+        LOG_INF("x: %d, %d, y: %d, %d, z: %d, %d", x.val1, x.val2, y.val1, y.val2, z.val1, z.val2);
+
+        k_sleep(K_MSEC(2000));
+    }
+//
+//    const struct device *dev = device_get_binding("SHT3XD");
+//    int rc;
+//
+//    if (dev == NULL) {
+//        LOG_WRN("Could not get SHT3XD device\n");
+//        return;
+//    }
+//
+//    while (true) {
+//        struct sensor_value temp, hum;
+//
+//        rc = sensor_sample_fetch(dev);
+//        if (rc == 0) {
+//            rc = sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP,
+//                                    &temp);
+//        }
+//        if (rc == 0) {
+//            rc = sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY,
+//                                    &hum);
+//        }
+//        if (rc != 0) {
+//            LOG_INF("SHT3XD: failed: %d\n", rc);
+//            break;
+//        }
+//        LOG_INF("%d, %d", temp.val1, temp.val2);
+//        LOG_INF("%d, %d", hum.val1, hum.val2);
+//
+//        k_sleep(K_MSEC(2000));
+//    }
+
+
     /* Connect GPIOTE_0 IRQ to nrfx_gpiote_irq_handler */
-    IRQ_CONNECT(DT_IRQN(DT_NODELABEL(gpiote)),
-                DT_IRQ(DT_NODELABEL(gpiote), priority),
-                nrfx_isr, nrfx_gpiote_irq_handler, 0);
-    (void)nrfx_gpiote_init(NRFX_GPIOTE_DEFAULT_CONFIG_IRQ_PRIORITY);
-    app_button_init(on_btn_single_click, NULL, on_btn_long_press, NULL);
+//    IRQ_CONNECT(DT_IRQN(DT_NODELABEL(gpiote)),
+//                DT_IRQ(DT_NODELABEL(gpiote), priority),
+//                nrfx_isr, nrfx_gpiote_irq_handler, 0);
+//    (void)nrfx_gpiote_init(NRFX_GPIOTE_DEFAULT_CONFIG_IRQ_PRIORITY);
+//    app_button_init(on_btn_single_click, NULL, on_btn_long_press, NULL);
 //    app_sht30d_init();
-    led_init();
+//    led_init();
     k_msleep(100);
     otInstance * instance = openthread_get_default_instance();
     otError  error        = OT_ERROR_NONE;
@@ -143,11 +259,11 @@ void main(void) {
     if(ret < 0){
         LOG_ERR("create ojb 3311/0 err (%d)", ret);
     }
-    ret = lwm2m_engine_register_post_write_callback("3311/0/5850",
-                                              led_on_off_cb);
-    if(ret < 0){
-        LOG_ERR("create resource 3311/0/5850 err (%d)", ret);
-    }
+//    ret = lwm2m_engine_register_post_write_callback("3311/0/5850",
+//                                              led_on_off_cb);
+//    if(ret < 0){
+//        LOG_ERR("create resource 3311/0/5850 err (%d)", ret);
+//    }
     lwm2m_engine_set_res_data("3311/0/5750",
                               LIGHT_NAME, sizeof(LIGHT_NAME),
                               LWM2M_RES_DATA_FLAG_RO);
@@ -164,9 +280,6 @@ void main(void) {
     }
     while(1){
         k_msleep(3600000);
-        app_lwm2m_client_stop();
-        k_msleep(10000);
-        app_lwm2m_client_restart();
     }
     LOG_ERR("NEVER RUN!");
 }

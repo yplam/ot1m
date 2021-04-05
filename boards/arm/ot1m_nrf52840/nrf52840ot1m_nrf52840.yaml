@@ -1,0 +1,18 @@
+identifier: nrf52840ot1m_nrf52840
+name: nRF52840-OT1M-NRF52840
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - adc
+  - ble
+  - counter
+  - i2c
+  - ieee802154
+  - pwm
+  - watchdog

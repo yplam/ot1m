@@ -1,0 +1,18 @@
+identifier: ot1m_display_nrf52840
+name: OT1M-Display-NRF52840
+type: mcu
+arch: arm
+ram: 256
+flash: 1024
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - adc
+  - ble
+  - counter
+  - i2c
+  - ieee802154
+  - pwm
+  - watchdog

@@ -1,0 +1,6 @@
+
+config WAVESHARE_4IN2
+	bool "WAVESHARE_4IN2 compatible display controller driver"
+	depends on SPI
+	help
+	  Enable driver for WAVESHARE_4IN2 compatible controller.

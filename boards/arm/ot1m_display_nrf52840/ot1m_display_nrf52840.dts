@@ -1,5 +1,23 @@
+/*
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+
 / {
-    leds {
+	model = "Nordic nRF52840 OT1M NRF52840";
+	compatible = "nordic,nrf52840-ot1m-nrf52840";
+
+	chosen {
+		zephyr,console = &uart0;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+	};
+
+	leds {
 		compatible = "gpio-leds";
 		led0: led_0 {
 			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
@@ -22,9 +40,57 @@
     };
 };
 
-&uart0 {
-    status = "disabled";
+&gpio0 {
+	status = "okay";
 };
+
+&gpiote {
+	status = "okay";
+};
+
+&flash0 {
+	/*
+	 * For more information, see:
+	 * http://docs.zephyrproject.org/latest/guides/dts/index.html#flash-partitions
+	 */
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x000000000 0x00010000>;
+		};
+		slot0_partition: partition@10000 {
+			label = "image-0";
+			reg = <0x00010000 0x00065000>;
+		};
+		slot1_partition: partition@75000 {
+			label = "image-1";
+			reg = <0x00075000 0x00065000>;
+		};
+		scratch_partition: partition@da000 {
+			label = "image-scratch";
+			reg = <0x000da000 0x0001e000>;
+		};
+
+		/*
+		 * The flash starting at 0x000f8000 and ending at
+		 * 0x000fffff is reserved for use by the application.
+		 */
+
+		/*
+		 * Storage partition will be used by FCB/LittleFS/NVS
+		 * if enabled.
+		 */
+		storage_partition: partition@f8000 {
+			label = "storage";
+			reg = <0x000f8000 0x00008000>;
+		};
+	};
+};
+
 
 &gpio0 {
 	status = "okay";
@@ -38,34 +104,15 @@
 	miso-pin = <22>;
 	cs-gpios = <&gpio0 31 GPIO_ACTIVE_LOW>;
 
-	ssd16xxfb@0 {
-		compatible = "solomon,ssd16xxfb", "gooddisplay,gdeh0213b1";
-		label = "SSD16XX";
+	waveshare4in2@0 {
+		compatible = "waveshare,4in2";
+		label = "WaveShare_4IN2";
 		spi-max-frequency = <4000000>;
 		reg = <0>;
-		width = <250>;
-		height = <122>;
-		pp-width-bits = <8>;
-		pp-height-bits = <8>;
+		power-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
 		dc-gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
 		busy-gpios = <&gpio0 17 GPIO_ACTIVE_LOW>;
-		gdv = [10 0a];
-		sdv = [19];
-		vcom = <0xa8>;
-		border-waveform = <0x71>;
-		lut-initial = [
-			22 55 AA 55 AA 55 AA 11
-			00 00 00 00 00 00 00 00
-			1E 1E 1E 1E 1E 1E 1E 1E
-			01 00 00 00 00
-		];
-		lut-default = [
-			18 00 00 00 00 00 00 00
-			00 00 00 00 00 00 00 00
-			0F 01 00 00 00 00 00 00
-			00 00 00 00 00
-		];
 	};
 };
 
@@ -80,10 +127,10 @@
 		reg = <0x44>;
 		label = "SHT3XD";
 	};
-	lis3mdl-magn@19 {
-		compatible = "st,lis3mdl-magn";
+	lis3dh@19 {
+		compatible = "st,lis2dh", "st,lis3dh";
 		reg = <0x19>;
-		label = "LIS3MDL";
+		label = "LIS3DH";
 		irq-gpios = <&gpio0 29 0>;
 	};
 };

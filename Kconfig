@@ -26,3 +26,4 @@ config APP_OPENTHREAD_JOINER_PSKD
 endmenu
 
 rsource "lib/Kconfig"
+rsource "drivers/Kconfig"

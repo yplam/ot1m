@@ -16,5 +16,4 @@ typedef struct {
 enum lwm2m_rd_client_event app_lwm2m_get_client_event(void);
 int app_lwm2m_client_start(app_lwm2m_settings * lwm2m_settings);
 void app_lwm2m_client_stop(void);
-void app_lwm2m_client_restart(void);
 #endif //OT_AT_APP_LWM2M_H
