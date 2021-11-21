@@ -1,11 +1,11 @@
-# NRF52840OT1M NRF52840 board configuration
+# OT1M NRF52840 board configuration
 
 # SPDX-License-Identifier: Apache-2.0
 
-if BOARD_NRF52840OT1M_NRF52840
+if BOARD_OT1M_NRF52840
 
 config BOARD
-	default "nrf52840ot1m_nrf52840"
+	default "ot1m_nrf52840"
 
 if USB
 
@@ -24,4 +24,4 @@ config IEEE802154_NRF5
 config BT_CTLR
 	default BT
 
-endif # BOARD_NRF52840OT1M_NRF52840
+endif # BOARD_OT1M_NRF52840

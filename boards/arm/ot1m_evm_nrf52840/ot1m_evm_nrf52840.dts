@@ -14,24 +14,44 @@
 		zephyr,console = &uart0;
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
+		zephyr,entropy = &rng;
 		zephyr,code-partition = &slot0_partition;
 	};
 
-	buttons {
-		compatible = "gpio-keys";
-		button0: button_0 {
-			gpios = <&gpio0 8 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "en pin";
+	leds {
+		compatible = "gpio-leds";
+		red_led: led_0 {
+			gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
+			label = "User D3 red";
+		};
+		green_led: led_1 {
+			gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
+			label = "User D3 green";
+		};
+		led3: led_3 {
+			gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+			label = "Green LED 3";
 		};
 	};
 
-	/* These aliases are provided for compatibility with samples */
-	aliases {
-		btnen = &button0;
+	pwmleds {
+		pwm_led3: pwm_led_3 {
+			pwms = <&pwm0 16>;
+		};
 	};
 };
 
+&pwm0 {
+	status = "okay";
+	ch1-pin = <16>;
+	ch1-inverted;
+};
+
 &gpio0 {
+	status = "okay";
+};
+
+&gpio1 {
 	status = "okay";
 };
 
@@ -43,8 +63,8 @@
 	compatible = "nordic,nrf-uart";
 	status = "okay";
 	current-speed = <115200>;
-	tx-pin = <26>;
-	rx-pin = <12>;
+	tx-pin = <15>;
+	rx-pin = <17>;
 };
 
 &flash0 {

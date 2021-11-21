@@ -60,7 +60,7 @@ out:
 }
 
 /**
- * 读取 key 的配置项，存到 value 指向的缓冲区，缓冲区大小以 value_lenght 指定
+ * 读取 key 的配置项，存到 value 指向的缓冲区，缓冲区大小以 value_length 指定
  * @param key
  * @param value
  * @param value_length 输入缓冲区大小，返回读到的数据长度

@@ -1,5 +1,5 @@
-identifier: nrf52840ot1m_nrf52840
-name: nRF52840-OT1M-NRF52840
+identifier: ot1m_evm_nrf52840
+name: OT1M-EVM-NRF52840
 type: mcu
 arch: arm
 ram: 256

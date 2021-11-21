@@ -7,44 +7,16 @@
 #include <nordic/nrf52840_qiaa.dtsi>
 
 / {
-	model = "Nordic nRF52840 OT1M NRF52840";
-	compatible = "nordic,nrf52840-ot1m-nrf52840";
+	model = "Nordic OT1M NRF52840";
+	compatible = "nordic,ot1m-nrf52840";
 
 	chosen {
 		zephyr,console = &uart0;
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
+		zephyr,entropy = &rng;
 		zephyr,code-partition = &slot0_partition;
 	};
-
-	buttons {
-		compatible = "gpio-keys";
-		button0: button_0 {
-			gpios = <&gpio0 8 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
-			label = "en pin";
-		};
-	};
-
-	/* These aliases are provided for compatibility with samples */
-	aliases {
-		btnen = &button0;
-	};
-};
-
-&gpio0 {
-	status = "okay";
-};
-
-&gpiote {
-	status = "okay";
-};
-
-&uart0 {
-	compatible = "nordic,nrf-uart";
-	status = "okay";
-	current-speed = <115200>;
-	tx-pin = <26>;
-	rx-pin = <12>;
 };
 
 &flash0 {

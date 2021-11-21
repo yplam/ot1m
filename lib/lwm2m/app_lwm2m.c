@@ -192,10 +192,6 @@ void app_lwm2m_client_stop(void){
     lwm2m_rd_client_stop(&client, NULL);
 }
 
-void app_lwm2m_client_restart(void){
-    engine_trigger_restart();
-}
-
 static int app_lwm2m_init_client(const struct device *dev)
 {
     app_lwm2m_settings lwm2m_settings;

@@ -152,7 +152,7 @@ static int w4in2_blanking_off(const struct device *dev)
             return err;
         }
     }
-    err = w4in2_write_cmd(driver, 0x13, driver->buffer, 1500);
+    err = w4in2_write_cmd(driver, 0x13, driver->buffer, 15000);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;

@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.13.1)
 
-set(BOARD ot1m_display_nrf52840)
+set(BOARD ot1m_evm_nrf52840)
 
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 
@@ -28,6 +28,6 @@ include_directories(${ZEPHYR_BASE}/subsys/net/ip ../modules/lib/openthread/inclu
 
 
 project(lwm2m_client)
-target_sources(app PRIVATE src/main.c src/epdpaint.c src/font8.c)
+target_sources(app PRIVATE src/main.c)
 
 target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/src)
