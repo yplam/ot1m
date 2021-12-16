@@ -8,5 +8,8 @@ menu "App Settings Lib"
 
 config APP_SETTINGS
 	bool "App Settings Lib"
+    select FLASH
+    select SETTINGS
+    select SETTINGS_RUNTIME
 
 endmenu

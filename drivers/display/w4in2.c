@@ -12,6 +12,7 @@ LOG_MODULE_REGISTER(w4in2);
 
 #include <string.h>
 #include <device.h>
+#include <devicetree.h>
 #include <drivers/display.h>
 #include <init.h>
 #include <drivers/gpio.h>
@@ -77,14 +78,6 @@ struct w4in2_data {
     uint8_t update_cmd;
 
 };
-
-static const struct device *led_dev;
-
-#define LED0_NODE DT_NODELABEL(led0)
-#define LED0	DT_GPIO_LABEL(LED0_NODE, gpios)
-#define LED_PIN	DT_GPIO_PIN(LED0_NODE, gpios)
-#define LED_FLAGS	DT_GPIO_FLAGS(LED0_NODE, gpios)
-
 
 static inline int w4in2_write_cmd(struct w4in2_data *driver,
                                     uint8_t cmd, uint8_t *data, size_t len)
@@ -152,7 +145,7 @@ static int w4in2_blanking_off(const struct device *dev)
             return err;
         }
     }
-    err = w4in2_write_cmd(driver, 0x13, driver->buffer, 15000);
+    err = w4in2_write_cmd(driver, 0x13, (uint8_t *)driver->buffer, 15000);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
@@ -232,7 +225,7 @@ static int w4in2_read(const struct device *dev, const uint16_t x,
 static void *w4in2_get_framebuffer(const struct device *dev)
 {
     struct w4in2_data *driver = dev->data;
-    return driver->buffer;
+    return (void *)driver->buffer;
 }
 
 static int w4in2_set_brightness(const struct device *dev,
@@ -331,31 +324,31 @@ static const unsigned char EPD_4IN2_lut_bb[] = {
 static int w4in2_init_lut(struct w4in2_data *driver)
 {
     int err;
-    err = w4in2_write_cmd(driver, 0x20, EPD_4IN2_lut_vcom0, 44);
+    err = w4in2_write_cmd(driver, 0x20, (uint8_t *)EPD_4IN2_lut_vcom0, 44);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
-    err = w4in2_write_cmd(driver, 0x21, EPD_4IN2_lut_ww, 42);
+    err = w4in2_write_cmd(driver, 0x21, (uint8_t *)EPD_4IN2_lut_ww, 42);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
-    err = w4in2_write_cmd(driver, 0x22, EPD_4IN2_lut_bw, 42);
+    err = w4in2_write_cmd(driver, 0x22, (uint8_t *)EPD_4IN2_lut_bw, 42);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
-    err = w4in2_write_cmd(driver, 0x23, EPD_4IN2_lut_wb, 42);
+    err = w4in2_write_cmd(driver, 0x23, (uint8_t *)EPD_4IN2_lut_wb, 42);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
-    err = w4in2_write_cmd(driver, 0x24, EPD_4IN2_lut_bb, 42);
+    err = w4in2_write_cmd(driver, 0x24, (uint8_t *)EPD_4IN2_lut_bb, 42);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
@@ -366,8 +359,6 @@ static int w4in2_init_lut(struct w4in2_data *driver)
 static int w4in2_controller_init(const struct device *dev)
 {
     int err;
-    uint8_t tmp[3];
-    size_t len;
     struct w4in2_data *driver = dev->data;
 
     LOG_DBG("controller init");
@@ -384,14 +375,14 @@ static int w4in2_controller_init(const struct device *dev)
     w4in2_busy_wait(driver);
 
     const uint8_t power_setting[] = {0x03, 0x00, 0x2b, 0x2b};
-    err = w4in2_write_cmd(driver, 0x01, power_setting, 4);
+    err = w4in2_write_cmd(driver, 0x01, (uint8_t *)power_setting, 4);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
     const uint8_t boost[] = {0x17, 0x17, 0x17};
-    err = w4in2_write_cmd(driver, 0x06, boost, 3);
+    err = w4in2_write_cmd(driver, 0x06, (uint8_t *)boost, 3);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
@@ -405,35 +396,35 @@ static int w4in2_controller_init(const struct device *dev)
     w4in2_busy_wait(driver);
 
     const uint8_t panel[] = {0xbf, 0x0d};
-    err = w4in2_write_cmd(driver, 0x00, panel, 2);
+    err = w4in2_write_cmd(driver, 0x00, (uint8_t *)panel, 2);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
     const uint8_t pll[] = {0x3c};
-    err = w4in2_write_cmd(driver, 0x30, pll, 1);
+    err = w4in2_write_cmd(driver, 0x30, (uint8_t *)pll, 1);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
     const uint8_t res[] = {0x01, 0x90, 0x01, 0x2c};
-    err = w4in2_write_cmd(driver, 0x61, res, 4);
+    err = w4in2_write_cmd(driver, 0x61, (uint8_t *)res, 4);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
     const uint8_t dc[] = {0x28};
-    err = w4in2_write_cmd(driver, 0x82, dc, 1);
+    err = w4in2_write_cmd(driver, 0x82, (uint8_t *)dc, 1);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
     }
 
     const uint8_t vcom[] = {0x97};
-    err = w4in2_write_cmd(driver, 0X50, vcom, 1);
+    err = w4in2_write_cmd(driver, 0X50, (uint8_t *)vcom, 1);
     if (err < 0) {
         LOG_WRN("ERR %d", err);
         return err;
@@ -539,7 +530,7 @@ static struct display_driver_api w4in2_driver_api = {
 };
 
 
-DEVICE_DT_INST_DEFINE(0, w4in2_init, device_pm_control_nop,
-                      &w4in2_driver, NULL,
-                      POST_KERNEL, CONFIG_APPLICATION_INIT_PRIORITY,
+DEVICE_DT_INST_DEFINE(0, &w4in2_init, device_pm_control_nop,		\
+                      &w4in2_driver, NULL,		\
+                      POST_KERNEL, CONFIG_APPLICATION_INIT_PRIORITY,		\
                       &w4in2_driver_api);

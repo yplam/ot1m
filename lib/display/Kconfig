@@ -8,6 +8,11 @@ menu "App Display Configure"
 
 config APP_DISPLAY
 	bool "App Display Configure"
+    select SPI
+    select SPI_ASYNC
+    select DISPLAY
+    select WAVESHARE_4IN2
+    select CHARACTER_FRAMEBUFFER
 
 endmenu
 

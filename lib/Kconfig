@@ -1,6 +1,8 @@
 #
+
 # Copyright (c) 2018 Nordic Semiconductor ASA
 #
+
 # SPDX-License-Identifier: LicenseRef-BSD-5-Clause-Nordic
 #
 
@@ -13,5 +15,6 @@ rsource "lwm2m/Kconfig"
 rsource "sht30d/Kconfig"
 rsource "button/Kconfig"
 rsource "display/Kconfig"
+rsource "sensor/Kconfig"
 
 endmenu

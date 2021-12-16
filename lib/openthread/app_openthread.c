@@ -27,7 +27,6 @@ bool app_ot_is_connected(void) {
     return is_connected;
 }
 
-
 static void handle_openthread_join_callback(otError error, void * p_context)
 {
     otInstance * instance = openthread_get_default_instance();
@@ -151,4 +150,4 @@ static int app_openthread_network_start(const struct device *dev)
     return error == OT_ERROR_NONE ? 0 : -EIO;
 }
 
-SYS_INIT(app_openthread_network_start, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT-1);
+SYS_INIT(app_openthread_network_start, APPLICATION, 39);

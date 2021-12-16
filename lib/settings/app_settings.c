@@ -1,7 +1,7 @@
 #include "app_settings.h"
 #include <logging/log.h>
 LOG_MODULE_REGISTER(app_settings, LOG_LEVEL_INF);
-#include <settings/settings.h>
+#include "settings/settings.h"
 
 /**
  * 配置读取上下文定义

@@ -6,5 +6,11 @@
 
 config APP_LWM2M
 	bool "App LWM2M Configure"
+    select LWM2M
+    select LWM2M_IPSO_SUPPORT
+    select LWM2M_IPSO_TEMP_SENSOR
+    select LWM2M_IPSO_LIGHT_CONTROL
+    select LWM2M_IPSO_TIMER
 	select APP_SETTINGS
 	select APP_OPENTHREAD
+

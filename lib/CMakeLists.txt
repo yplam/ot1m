@@ -11,4 +11,5 @@ add_subdirectory_ifdef(CONFIG_APP_LWM2M lwm2m)
 add_subdirectory_ifdef(CONFIG_APP_SHT30D sht30d)
 add_subdirectory_ifdef(CONFIG_APP_BUTTON button)
 add_subdirectory_ifdef(CONFIG_APP_DISPLAY display)
+add_subdirectory_ifdef(CONFIG_APP_SENSOR sensor)
 

@@ -44,7 +44,15 @@
 	status = "okay";
 };
 
+&gpio1 {
+	status = "okay";
+};
+
 &gpiote {
+	status = "okay";
+};
+
+&adc {
 	status = "okay";
 };
 
@@ -89,11 +97,6 @@
 			reg = <0x000f8000 0x00008000>;
 		};
 	};
-};
-
-
-&gpio0 {
-	status = "okay";
 };
 
 &spi2 {
@@ -163,4 +166,3 @@
 		t-exit-dpd = <35000>;
 	};
 };
-
