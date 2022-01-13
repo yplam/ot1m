@@ -16,11 +16,12 @@ LOG_MODULE_REGISTER(app_lwm2m, LOG_LEVEL_INF);
 #define TLS_TAG			1
 static struct lwm2m_ctx client;
 uint32_t flags;
+enum app_lwm2m_status client_status = APP_LWM2M_DISCONNECT;
 enum lwm2m_rd_client_event client_event;
 char eui[17];
-enum lwm2m_rd_client_event app_lwm2m_get_client_event(void)
+enum app_lwm2m_status app_lwm2m_get_status(void)
 {
-    return client_event;
+    return client_status;
 }
 
 static void rd_client_event(struct lwm2m_ctx *client,
@@ -35,10 +36,12 @@ static void rd_client_event(struct lwm2m_ctx *client,
             break;
 
         case LWM2M_RD_CLIENT_EVENT_BOOTSTRAP_REG_FAILURE:
+            client_status = APP_LWM2M_DISCONNECT;
             LOG_INF("Bootstrap registration failure!");
             break;
 
         case LWM2M_RD_CLIENT_EVENT_BOOTSTRAP_REG_COMPLETE:
+            client_status = APP_LWM2M_CONNECT;
             LOG_INF("Bootstrap registration complete");
             break;
 
@@ -47,18 +50,22 @@ static void rd_client_event(struct lwm2m_ctx *client,
             break;
 
         case LWM2M_RD_CLIENT_EVENT_REGISTRATION_FAILURE:
+            client_status = APP_LWM2M_DISCONNECT;
             LOG_INF("Registration failure!");
             break;
 
         case LWM2M_RD_CLIENT_EVENT_REGISTRATION_COMPLETE:
+            client_status = APP_LWM2M_CONNECT;
             LOG_INF("Registration complete");
             break;
 
         case LWM2M_RD_CLIENT_EVENT_REG_UPDATE_FAILURE:
+            client_status = APP_LWM2M_DISCONNECT;
             LOG_INF("Registration update failure!");
             break;
 
         case LWM2M_RD_CLIENT_EVENT_REG_UPDATE_COMPLETE:
+            client_status = APP_LWM2M_CONNECT;
             LOG_INF("Registration update complete");
             break;
 
@@ -67,6 +74,7 @@ static void rd_client_event(struct lwm2m_ctx *client,
             break;
 
         case LWM2M_RD_CLIENT_EVENT_DISCONNECT:
+            client_status = APP_LWM2M_DISCONNECT;
             LOG_INF("Disconnected");
             break;
 
@@ -76,7 +84,8 @@ static void rd_client_event(struct lwm2m_ctx *client,
     }
 }
 
-static int device_reboot_cb(uint16_t obj_inst_id)
+static int device_reboot_cb(uint16_t obj_inst_id,
+                            uint8_t *args, uint16_t args_len)
 {
     ARG_UNUSED(obj_inst_id);
     LOG_INF("Device rebooting.");
@@ -85,13 +94,14 @@ static int device_reboot_cb(uint16_t obj_inst_id)
     return 0; /* wont reach this */
 }
 
-static int device_reset_error_code_cb(uint16_t obj_inst_id)
+static int device_reset_error_code_cb(uint16_t obj_inst_id,
+                                      uint8_t *args, uint16_t args_len)
 {
     LOG_INF("Device reset error code.");
     return 0; /* wont reach this */
 }
 
-int app_lwm2m_client_start(app_lwm2m_settings * lwm2m_settings){
+int app_lwm2m_client_setup(app_lwm2m_settings * lwm2m_settings){
     int32_t ret;
     char *server_url;
     uint16_t server_url_len;
@@ -129,12 +139,14 @@ int app_lwm2m_client_start(app_lwm2m_settings * lwm2m_settings){
     /* Security Mode */
     (void)lwm2m_engine_set_u8("0/0/2",
                         lwm2m_settings->enable_psk ? 0 : 3);
+#if defined(CONFIG_LWM2M_DTLS_SUPPORT)
     if(lwm2m_settings->enable_psk){
         (void)lwm2m_engine_set_string("0/0/3", (char *)lwm2m_settings->psk_id);
         (void)lwm2m_engine_set_opaque("0/0/5",
                                 (void *)lwm2m_settings->psk_key, lwm2m_settings->psk_key_length);
         client.tls_tag = TLS_TAG;
     }
+#endif
     if(lwm2m_settings->server_is_bootstrap){
         /* Mark 1st instance of security object as a bootstrap server */
         (void)lwm2m_engine_set_u8("0/0/1", 1);
@@ -183,10 +195,16 @@ int app_lwm2m_client_start(app_lwm2m_settings * lwm2m_settings){
 //    if (ret < 0) {
 //        LOG_DBG("Create LWM2M instance 0 error: %d", ret);
 //    }
-    LOG_INF("starting %s", log_strdup(eui));
-    lwm2m_rd_client_start(&client, eui, flags, rd_client_event);
+//    LOG_INF("starting %s", log_strdup(eui));
+//    lwm2m_rd_client_start(&client, eui, flags, rd_client_event);
     return ret;
 }
+
+void app_lwm2m_client_start(void){
+    LOG_INF("starting %s", log_strdup(eui));
+    lwm2m_rd_client_start(&client, eui, flags, rd_client_event);
+}
+
 
 void app_lwm2m_client_stop(void){
     lwm2m_rd_client_stop(&client, NULL);
@@ -194,13 +212,16 @@ void app_lwm2m_client_stop(void){
 
 static int app_lwm2m_init_client(const struct device *dev)
 {
+    ARG_UNUSED(dev);
     app_lwm2m_settings lwm2m_settings;
     uint16_t setting_len = sizeof(lwm2m_settings);
     int ret = app_settings_get(APP_SETTINGS_LWM2M, (uint8_t *)&lwm2m_settings, &setting_len);
     if(ret == 0){
-        ret = app_lwm2m_client_start(&lwm2m_settings);
+        ret = app_lwm2m_client_setup(&lwm2m_settings);
         if(ret != 0){
             LOG_WRN("bootstrap error %d", ret);
+        } else {
+            app_lwm2m_client_start();
         }
     }
     else{

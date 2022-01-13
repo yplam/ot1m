@@ -4,6 +4,6 @@
 
 #include <drivers/sensor.h>
 
-struct sensor_value *get_sensor(int index);
-
+struct sensor_value *app_sensor_get_value(int index);
+struct k_sem *app_sensor_get_sem(void);
 #endif //APP_SENSOR_H

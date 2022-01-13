@@ -8,7 +8,8 @@ set(BOARD ot1m_display_nrf52840)
 #    set(CMAKE_BUILD_TYPE ZDebug)
 #endif()
 # Point to the build type-specific config file
-#set(CONF_FILE "prj.${CMAKE_BUILD_TYPE}.conf")
+# set(CONF_FILE "prj.conf overlay-ot.conf overlay-dtls.conf")
+set(CONF_FILE "prj.conf overlay-ot.conf")
 
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 
@@ -34,6 +35,6 @@ include_directories(${ZEPHYR_BASE}/subsys/net/ip ../../../modules/lib/openthread
 
 
 project(lwm2m_display)
-target_sources(app PRIVATE src/main.c src/bat.c)
+target_sources(app PRIVATE src/main.c src/bat.c src/lwm2m_display.c src/app_display.c)
 
 target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/src)

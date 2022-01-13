@@ -16,5 +16,6 @@ rsource "sht30d/Kconfig"
 rsource "button/Kconfig"
 rsource "display/Kconfig"
 rsource "sensor/Kconfig"
+rsource "zigbee_device/Kconfig"
 
 endmenu

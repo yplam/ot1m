@@ -36,6 +36,10 @@ bool bat_is_standby(void) {
     return !gpio_pin_get(gpio1_dev, 10);
 }
 
+int16_t get_bat_val(void) {
+    return channel_0_data;
+}
+
 static int init_adc(void)
 {
     adc_dev = device_get_binding(ADC_DEVICE_NAME);

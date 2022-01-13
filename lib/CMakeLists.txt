@@ -12,4 +12,5 @@ add_subdirectory_ifdef(CONFIG_APP_SHT30D sht30d)
 add_subdirectory_ifdef(CONFIG_APP_BUTTON button)
 add_subdirectory_ifdef(CONFIG_APP_DISPLAY display)
 add_subdirectory_ifdef(CONFIG_APP_SENSOR sensor)
+add_subdirectory_ifdef(CONFIG_SUBSYS_ZIGBEE_DEVICE zigbee_device)
 

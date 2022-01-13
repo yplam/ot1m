@@ -2,7 +2,6 @@
 #define APP_DISPLAY_H
 
 #include <drivers/sensor.h>
-
-void set_sensor(int index, struct sensor_value * sensor);
-
+void app_display_init(void);
+void app_display_update(void);
 #endif //APP_DISPLAY_H

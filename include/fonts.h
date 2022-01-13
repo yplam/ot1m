@@ -63,6 +63,7 @@ extern sFONT Font8;
 extern sFONT Font24;
 extern sFONT Font1632;
 extern sFONT Font815;
+extern sFONT FontICON;
 //extern sFONT Font24Custom;
 //extern sFONT Font3248Custom;
 

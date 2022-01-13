@@ -13,7 +13,13 @@ typedef struct {
     uint8_t psk_key_length;
 } app_lwm2m_settings;
 
-enum lwm2m_rd_client_event app_lwm2m_get_client_event(void);
-int app_lwm2m_client_start(app_lwm2m_settings * lwm2m_settings);
+enum app_lwm2m_status {
+    APP_LWM2M_CONNECT,
+    APP_LWM2M_DISCONNECT,
+};
+
+enum app_lwm2m_status app_lwm2m_get_status(void);
+int app_lwm2m_client_setup(app_lwm2m_settings * lwm2m_settings);
+void app_lwm2m_client_start(void);
 void app_lwm2m_client_stop(void);
 #endif //OT_AT_APP_LWM2M_H
