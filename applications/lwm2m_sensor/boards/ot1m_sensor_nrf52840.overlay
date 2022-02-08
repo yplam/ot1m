@@ -1,0 +1,15 @@
+
+&uart1 {
+	compatible = "nordic,nrf-uarte";
+	current-speed = <9600>;
+	status = "okay";
+	tx-pin = <6>;
+	rx-pin = <26>;
+
+    modbus0 {
+		compatible = "zephyr,modbus-serial";
+		label = "MODBUS0";
+		status = "okay";
+	};
+    /*08*/
+};

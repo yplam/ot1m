@@ -109,10 +109,7 @@ int app_lwm2m_client_setup(app_lwm2m_settings * lwm2m_settings){
     flags = lwm2m_settings->server_is_bootstrap ?
                      LWM2M_RD_CLIENT_FLAG_BOOTSTRAP : 0U;
     (void)memset(&client, 0x0, sizeof(client));
-    LOG_INF("connecting to lwm2m");
-    if(!strlen(lwm2m_settings->server_addr)){
-        return -EINVAL;
-    }
+    LOG_INF("setup lwm2m");
     if(lwm2m_settings->enable_psk){
         if(!strlen(lwm2m_settings->psk_id)){
             LOG_ERR("no psk_id");
@@ -123,19 +120,21 @@ int app_lwm2m_client_setup(app_lwm2m_settings * lwm2m_settings){
             return -EINVAL;
         }
     }
-    /* Server URL */
-    ret = lwm2m_engine_get_res_data("0/0/0",
-                                    (void **)&server_url, &server_url_len,
-                                    &server_url_flags);
-    if (ret < 0) {
-        return ret;
+    if(strlen(lwm2m_settings->server_addr)) {
+        /* Server URL */
+        ret = lwm2m_engine_get_res_data("0/0/0",
+                                        (void **)&server_url, &server_url_len,
+                                        &server_url_flags);
+        if (ret < 0) {
+            return ret;
+        }
+
+        (void)snprintk(server_url, server_url_len, "coap%s//%s%s%s",
+                       lwm2m_settings->enable_psk ? "s:" : ":",
+                       strchr(lwm2m_settings->server_addr, ':') ? "[" : "", lwm2m_settings->server_addr,
+                       strchr(lwm2m_settings->server_addr, ':') ? "]" : "");
     }
-
-    (void)snprintk(server_url, server_url_len, "coap%s//%s%s%s",
-             lwm2m_settings->enable_psk ? "s:" : ":",
-             strchr(lwm2m_settings->server_addr, ':') ? "[" : "", lwm2m_settings->server_addr,
-             strchr(lwm2m_settings->server_addr, ':') ? "]" : "");
-
+    LOG_INF("config enginne");
     /* Security Mode */
     (void)lwm2m_engine_set_u8("0/0/2",
                         lwm2m_settings->enable_psk ? 0 : 3);

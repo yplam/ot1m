@@ -2,7 +2,13 @@
 
 cmake_minimum_required(VERSION 3.13.1)
 
-set(BOARD ot1m_evm_nrf52840)
+set(BOARD ot1m_sensor_nrf52840)
+
+#if (NOT CMAKE_BUILD_TYPE)
+#    set(CMAKE_BUILD_TYPE ZDebug)
+#endif()
+# Point to the build type-specific config file
+# set(CONF_FILE "prj.conf overlay-ot.conf overlay-dtls.conf")
 
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 
@@ -24,10 +30,10 @@ foreach (CONFIG ${LIST_OF_CONFIGS})
     set(${CONFIG_ITEM_NAME} ${CONFIG_ITEM_VALUE})
 endforeach()
 
-include_directories(${ZEPHYR_BASE}/subsys/net/ip ../modules/lib/openthread/include)
+include_directories(${ZEPHYR_BASE}/subsys/net/ip ../../../modules/lib/openthread/include)
 
 
-project(lwm2m_client)
-target_sources(app PRIVATE src/main.c)
+project(lwm2m_sensor)
+target_sources(app PRIVATE src/main.c src/senseair_s8.c)
 
 target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/src)
