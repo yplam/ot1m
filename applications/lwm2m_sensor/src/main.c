@@ -22,6 +22,8 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #include <app_lwm2m.h>
 #include <modbus/modbus.h>
 #include <sys/ring_buffer.h>
+#include <usb/usb_device.h>
+#include <logging/log_backend.h>
 //#include <drivers/flash.h>
 
 
@@ -209,6 +211,8 @@ void readCO2(struct k_work *work) {
 }
 
 void main(void) {
+    const struct log_backend * log_backend_current = log_backend_get(0);
+    log_backend_deactivate(log_backend_current);
     LOG_INF("OT1M Starting...");
     int ret;
     app_init_settings();
@@ -227,7 +231,20 @@ void main(void) {
     } else {
         k_work_schedule(&read_co2, K_SECONDS(5));
     }
+    const struct device *dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_console));
+    uint32_t dtr = 0;
+
+    if (usb_enable(NULL)) {
+        return;
+    }
+    /* Poll if the DTR flag was set */
+    while (!dtr) {
+        uart_line_ctrl_get(dev, UART_LINE_CTRL_DTR, &dtr);
+        /* Give CPU resources to low priority threads. */
+        k_sleep(K_SECONDS(1));
+    }
+    log_backend_activate(log_backend_current, log_backend_current->cb->ctx);
     while (true) {
-        k_sleep(K_SECONDS(100));
+        k_sleep(K_SECONDS(10));
     }
 }
